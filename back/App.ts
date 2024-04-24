@@ -1,12 +1,22 @@
-import express from 'express';
+import express, { Application } from 'express';
+import connectDB from './databases';
+import usersRouter from  './src/routes/routesUser'; // Assurez-vous que le chemin est correct
+import albumsRouter from './src/routes/routesAlbum'; // Assurez-vous que le chemin est correct
+import musicsRouter from './src/routes/routesMusic'; // Assurez-vous que le chemin est correct
 
 const app = express();
-const port = 3001; // Utilisez un port différent de celui du frontend
+const cors = require('cors');
+app.use(cors());
+app.use(express.json());
+connectDB();
 
-app.get('/', (req, res) => {
-  res.send('Hello Blockchain Spotify!');
-});
 
-app.listen(port, () => {
-  console.log(`Server listening at http://localhost:${port}`);
+// Utilisez les routes définies pour les utilisateurs
+app.use('/api/users', usersRouter);
+app.use('/api/albums', albumsRouter);
+app.use('/api/musics', musicsRouter);
+
+const PORT: number = parseInt(process.env.PORT || '3000'); // Utilisez parseInt pour convertir PORT en nombre
+app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
 });

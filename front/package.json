@@ -13,6 +13,7 @@
     "@web3-react/core": "^8.2.3",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-native": "^0.74.0",
     "react-scripts": "5.0.1",
     "thirdweb": "^5.10.1",
     "typescript": "5.4.5",
