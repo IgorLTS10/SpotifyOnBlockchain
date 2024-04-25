@@ -13,3 +13,30 @@
 .button:hover {
     background-color: #18a148; /* Un peu plus foncé */
 }
+
+.album-card {
+    border: 1px solid #ccc;
+    padding: 20px;
+    border-radius: 8px;
+    width: 200px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    position: relative;
+    background-color: white;
+}
+
+.album-card button {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background-color: #007BFF; /* Bleu Bootstrap */
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 15px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.album-card button:hover {
+    background-color: #0056b3; /* Bleu plus foncé au survol */
+}
