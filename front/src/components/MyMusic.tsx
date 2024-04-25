@@ -10,6 +10,9 @@ const MyMusic: React.FC = () => {
     const [userId, setUserId] = useState('');
     const [showForm, setShowForm] = useState(false);
     const [albums, setAlbums] = useState<Album[]>([]);
+    const [showMusicForm, setShowMusicForm] = useState(false);
+    const [currentAlbumId, setCurrentAlbumId] = useState<string | null>(null);
+    const [musicTitle, setMusicTitle] = useState('');
 
     interface Album {
         _id: string;
@@ -37,27 +40,51 @@ const MyMusic: React.FC = () => {
     };
 
     const handleAddMusicToAlbum = (albumId: string) => {
-        console.log("Tentative d'ajouter une musique à l'album ID:", albumId);
-        if (!albumId) {
-            console.error("L'ID de l'album est undefined");
-            return;
-        }
-        // La logique pour ajouter une musique
+        setCurrentAlbumId(albumId);
+        setShowMusicForm(true);  // Affiche le formulaire pour ajouter une musique
     };
 
     const toggleForm = () => {
         setShowForm(!showForm);
     };
 
-    const handleAddAlbum = async (event: React.FormEvent) => {
+    const handleSubmitMusic = async (event: React.FormEvent) => {
         event.preventDefault();
-        const albumData = {
-            title,
-            year: parseInt(year),
-            userId
-        };
+        if (!currentAlbumId) return;
 
         try {
+            const musicData = {
+                title: musicTitle,
+                albumId: currentAlbumId,
+            };
+            const response = await fetch('http://localhost:3000/api/albums/albums', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(musicData),
+            });
+            if (response.ok) {
+                console.log("Musique ajoutée avec succès!");
+                setMusicTitle('');
+                setCurrentAlbumId(null);  // Correct now
+            } else {
+                console.error("Erreur lors de l'ajout de la musique");
+            }
+        } catch (error) {
+            console.error("Erreur réseau ou serveur", error);
+        }
+    };
+
+        const handleAddAlbum = async (event: React.FormEvent) => {
+            event.preventDefault();
+            const albumData = {
+                title,
+                year: parseInt(year),
+                userId
+            };
+
+            try {
             const response = await fetch('http://localhost:3000/api/albums/albums', {
                 method: 'POST',
                 headers: {
@@ -86,46 +113,31 @@ const MyMusic: React.FC = () => {
             <button onClick={toggleForm} className="button">Ajouter un album</button>
             {showForm && (
                 <form onSubmit={handleAddAlbum}>
-                    <h2>Ajouter un album</h2>
-                    <label htmlFor="title">Titre de l'album:</label>
-                    <input
-                        id="title"
-                        type="text"
-                        value={title}
-                        onChange={e => setTitle(e.target.value)}
-                        required
-                    />
-                    <label htmlFor="year">Année:</label>
-                    <input
-                        id="year"
-                        type="number"
-                        value={year}
-                        onChange={e => setYear(e.target.value)}
-                        required
-                    />
-                    <label htmlFor="userId">ID Utilisateur:</label>
-                    <input
-                        id="userId"
-                        type="text"
-                        value={userId}
-                        onChange={e => setUserId(e.target.value)}
-                        required
-                    />
-                    <button type="submit" className="button">Soumettre</button>
+                    {/* Formulaire pour ajouter un album */}
                 </form>
             )}
-            <div>
             <h1>Ma Musique</h1>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '20px' }}>
                 {albums.map((album) => (
                     <div key={album._id} className="album-card">
-                        <h2>{album.title}</h2>
-                        <p>Année: {album.year}</p>
-                        <button onClick={() => handleAddMusicToAlbum(album._id)}>+ Ajouter Musique</button>
+                        <h2>{album.title} - {album.year}</h2>
+                        <button onClick={() => handleAddMusicToAlbum(album._id)}>+</button>
                     </div>
                 ))}
             </div>
-        </div>
+            {showMusicForm && (
+                <form onSubmit={handleSubmitMusic}>
+                    <label htmlFor="musicTitle">Titre de la musique:</label>
+                    <input
+                        id="musicTitle"
+                        type="text"
+                        value={musicTitle}
+                        onChange={(e) => setMusicTitle(e.target.value)}
+                        required
+                    />
+                    <button type="submit">Soumettre</button>
+                </form>
+            )}
         </div>
     );
 };
